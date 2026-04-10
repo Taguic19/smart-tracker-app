@@ -38,8 +38,8 @@ model User {
   updatedAt DateTime @updatedAt @map("updated_at")
   profile Profile?
   tasks Task[]
+  refreshToken RefreshToken[]
   @@map("users")
-  @@index([email,id])
 }
 
 model Profile {
@@ -53,7 +53,6 @@ model Profile {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("profiles")
-  @@index([userId,id])
 }
 
 model Task {
@@ -70,6 +69,16 @@ model Task {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("tasks")
-  @@index([id, title])
 }
 
+model RefreshToken {
+  id String @id @default(cuid())
+  token String @unique
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("refresh_tokens")
+  @@index([userId])
+}

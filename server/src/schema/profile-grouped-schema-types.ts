@@ -11,3 +11,14 @@ export const createProfileSchema = z.object({
 
 
 export type CreateProfile = z.infer<typeof createProfileSchema>;
+
+export interface IProfile {
+    id: string;
+    firstName: string;
+    lastName: string;
+    birthDate: Date;
+    createdAt: Date;
+}
+
+export type ProfileUpdate = Partial<Omit<CreateProfile, "userId">>;
+

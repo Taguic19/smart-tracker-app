@@ -27,10 +27,13 @@ export const updateUserEmailService = async (userId: string, newEmail: string): 
     });
 }
 
-export const getUserByEmailService = async (email: string): Promise<IUser | null> => {
+export const findUserByEmailService = async (email: string): Promise<IUser | null> => {
     return await prisma.user.findUnique({
         where: {email},
-        select: userSafeSelect
+        select: {
+            ...userSafeSelect,
+            password: true
+        }
     });
 }
 
