@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Level {
+  EASY
+  MEDIUM
+  HARD
+}
+enum Status {
+  PENDING
+  IN_PROGRESS
+  DONE
+}
+
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  password String
+  isActive Boolean @default(true) @map("is_active")
+  role Role @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  profile Profile?
+  tasks Task[]
+  @@map("users")
+  @@index([email,id])
+}
+
+model Profile {
+  id String @id @default(cuid())
+  firstName String
+  lastName String
+  birthDate DateTime @db.Date
+  userId String @unique
+  user User @relation(fields: [userId],references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+  @@index([userId,id])
+}
+
+model Task {
+  id String @id @default(cuid())
+  title String @unique
+  description String
+  level Level
+  status Status @default(PENDING)
+  deadline DateTime
+  assigneeId String
+  assignee User @relation(fields: [assigneeId],references: [id])
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("tasks")
+  @@index([id, title])
+}
+
