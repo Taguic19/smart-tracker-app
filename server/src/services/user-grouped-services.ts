@@ -3,7 +3,7 @@ import type { CreateUser, IPaginatedUser } from "@/schema/user-grouped-schema-ty
 import {type IUser } from "@/schema/user-grouped-schema-types";
 
 
-const safeSelect = {
+export const userSafeSelect = {
             id: true,
             email: true,
             role: true,
@@ -15,7 +15,7 @@ const safeSelect = {
 export const createUserService = async (userData: CreateUser): Promise<IUser> => {
     return await prisma.user.create({
         data: userData,
-        select: safeSelect
+        select: userSafeSelect
     });
 }
 
@@ -23,35 +23,35 @@ export const updateUserEmailService = async (userId: string, newEmail: string): 
     return await prisma.user.update({
         where: {id: userId},
         data: {email: newEmail},
-        select: safeSelect
+        select: userSafeSelect
     });
 }
 
 export const getUserByEmailService = async (email: string): Promise<IUser | null> => {
     return await prisma.user.findUnique({
         where: {email},
-        select: safeSelect
+        select: userSafeSelect
     });
 }
 
 export const getUserByIdService = async (userId: string): Promise<IUser | null> => {
     return await prisma.user.delete({
         where: {id: userId},
-        select: safeSelect
+        select: userSafeSelect
     });
 }
 
 export const deleteUserByIdService = async (userId: string): Promise<IUser> => {
     return await prisma.user.delete({
         where: {id: userId},
-        select: safeSelect
+        select: userSafeSelect
     });
 }
 
 export const findUsersService = async (pageNumber: number, pageSize: number): Promise<IPaginatedUser> => {
     const [users, totalCount] = await prisma.$transaction([
         prisma.user.findMany({
-            select: safeSelect,
+            select: userSafeSelect,
             take: pageSize,
             skip: (pageNumber -1) * pageSize
         }),
