@@ -10,7 +10,7 @@ export const createTaskService = async (taskData: CreateTask): Promise<ITask> =>
     });
 }
 
-export const updateTaskStatus = async (taskId: string, newStatus: Status ): Promise<ITask> => {
+export const updateTaskStatusService = async (taskId: string, newStatus: Status ): Promise<ITask> => {
     return await prisma.task.update({
         where: {id: taskId},
         data: {status: newStatus}

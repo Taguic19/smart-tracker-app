@@ -64,3 +64,10 @@ export const findUsersService = async (pageNumber: number, pageSize: number): Pr
     return {users, totalCount}
 }
 
+export const updatePasswordService = async (userId: string, password: string): Promise<IUser> => {
+    return await prisma.user.update({
+        where: {id: userId},
+        data: {password},
+        select: userSafeSelect
+    });
+}

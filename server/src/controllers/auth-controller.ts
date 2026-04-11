@@ -26,13 +26,13 @@ export const loginUserController = factory.createHandlers(zValidator("json", cre
     }
     const accessPayload: TokenPayload = {
         sub: matchedUser.id,
-        iat: Math.floor(Date.now()),
+        iat: Math.floor(Date.now()/ 1000),
         exp: Math.floor(Date.now() / 1000) + 60 * 60,
         email: matchedUser.email,
         role: matchedUser.role
     } as const;
 
-    const refreshPayload: RefreshLoginPayload= {
+    const refreshPayload: RefreshLoginPayload = {
     sub: matchedUser.id,
     iat: Math.floor(Date.now() / 1000),
     exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days
@@ -42,6 +42,7 @@ export const loginUserController = factory.createHandlers(zValidator("json", cre
     const {token: refreshToken} = await generateToken(refreshPayload, process.env.JWT_REFRESH_KEY!, "HS256");
     setAuthCookie(c,refreshToken);
     await storeRefreshTokenService({token: refreshToken, userId: matchedUser.id});
+
     return c.json({
         success: true,
         message: "Logged in successfully",
@@ -73,6 +74,7 @@ export const registerUserController = factory.createHandlers(zValidator("json",c
     if(!createdUser) {
         throw new HTTPException(StatusCodes.INTERNAL_SERVER_ERROR, {message: "Failed to create user"});
     }
+    
     return c.json({success: true, user: createdUser, message: "User registered successfully"},StatusCodes.CREATED);
 });
 

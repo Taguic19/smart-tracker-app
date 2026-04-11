@@ -23,3 +23,7 @@ export interface ITask {
     createdAt: Date;
     updatedAt: Date;
 }
+
+export const taskStatusSchema = z.object({
+    status: z.enum(Status)
+});

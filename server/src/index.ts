@@ -6,6 +6,7 @@ import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import { prettyJSON } from "hono/pretty-json";
 import { routes } from "./routes";
+import { HTTPException } from "hono/http-exception";
 
 
 const app = new Hono<Env>().basePath("/api");
@@ -15,11 +16,10 @@ app.use(cors());
 app.use(prettyJSON());
 
 app.onError((err, c) => {
-  return c.json({
-    success: false,
-    status: "error",
-    message: err.message
-  });
+  if(err instanceof HTTPException) {
+    return c.json({succes: false, message: err.message},err.status);
+  }
+  return c.json({success: false, message: "Internal Server Error"},500);
 });
 
 app.notFound((c) => c.json({success: false, status: "error", message: `${c.req.url} was not found`}));
