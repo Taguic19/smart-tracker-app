@@ -5,8 +5,8 @@ import type { Env } from "./types/env";
 import { logger } from "hono/logger";
 import { cors } from "hono/cors";
 import { prettyJSON } from "hono/pretty-json";
-import { authenticationMiddleware } from "./middlewares/auth-middleware";
-import authRouter from "./routes/auth-routes";
+import { routes } from "./routes";
+
 
 const app = new Hono<Env>().basePath("/api");
 
@@ -30,7 +30,12 @@ app.get('/', (c) => {
 
 app.get("/test", (c) => c.text("You are authorized!"));
 
-app.route("/v1/auth", authRouter);
+// Routes
+
+routes.forEach(route => {
+  app.route("/", route);
+})
+
 
 serve({
   fetch: app.fetch,

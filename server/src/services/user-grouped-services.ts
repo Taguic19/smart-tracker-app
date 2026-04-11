@@ -37,8 +37,8 @@ export const findUserByEmailService = async (email: string): Promise<IUser | nul
     });
 }
 
-export const getUserByIdService = async (userId: string): Promise<IUser | null> => {
-    return await prisma.user.delete({
+export const findUserByIdService = async (userId: string): Promise<IUser | null> => {
+    return await prisma.user.findUnique({
         where: {id: userId},
         select: userSafeSelect
     });

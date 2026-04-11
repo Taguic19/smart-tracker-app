@@ -48,7 +48,7 @@ model Profile {
   lastName String
   birthDate DateTime @db.Date
   userId String @unique
-  user User @relation(fields: [userId],references: [id])
+  user User @relation(fields: [userId],references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -75,7 +75,7 @@ model RefreshToken {
   id String @id @default(cuid())
   token String @unique
   userId String
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

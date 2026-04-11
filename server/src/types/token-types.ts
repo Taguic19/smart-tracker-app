@@ -10,7 +10,15 @@ export const tokenSchema = z.object({
 
 export type TokenPayload = z.infer<typeof tokenSchema>;
 
+export type RefreshTokenPayload = TokenPayload;
+
 export type RefreshToken = {
     token: string;
     userId: string;
+}
+
+export type RefreshLoginPayload = {
+    sub: string;
+    exp: number;
+    iat: number;
 }
