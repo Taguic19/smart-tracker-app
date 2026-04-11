@@ -35,3 +35,9 @@ export const deleteTaskByIdService = async (taskId: string): Promise<ITask> => {
         where: {id: taskId},
     });
 }
+
+export const findTaskByIdService = async (taskId: string): Promise<ITask | null> => {
+    return await prisma.task.findUnique({
+        where: {id: taskId}
+    });
+}

@@ -84,10 +84,13 @@ export const issueAccessTokenController = factory.createHandlers(async (c) => {
     if(!refreshToken) {
         throw new HTTPException(StatusCodes.UNPROCESSABLE_ENTITY, {message: "Failed to retrieve Token"});
     }
-    const decoded = await verify(refreshToken, process.env.JWT_REFRESH_KEY!, "HS256") as RefreshLoginPayload;
 
-    if(!decoded) {
-        throw new HTTPException(StatusCodes.UNPROCESSABLE_ENTITY, {message: "Invalid or Expired toke"});
+    let decoded: RefreshLoginPayload;
+    try{
+    decoded = await verify(refreshToken, process.env.JWT_REFRESH_KEY!, "HS256") as RefreshLoginPayload;
+    }
+    catch{
+    throw new HTTPException(StatusCodes.UNPROCESSABLE_ENTITY, {message: "Invalid or Expired toke"});
     }
 
     const signedUser = await findUserByIdService(decoded.sub);
@@ -95,11 +98,14 @@ export const issueAccessTokenController = factory.createHandlers(async (c) => {
         throw new HTTPException(StatusCodes.NOT_FOUND, {message: `User with Id: ${decoded.sub} was not found`});
     }
     const payload: TokenPayload = {
-        ...decoded,
-        role: signedUser.role,
-        email: signedUser.email
+        iat: Math.floor(Date.now() / 1000),     
+        exp: Math.floor(Date.now() / 1000) + 60 * 60,
+        sub: decoded.sub,
+        email: signedUser.email,
+        role: signedUser.role
     }
-    const {token: accessToken} = await generateToken(payload,process.env.JWT_REFRESH_KEY!, "HS256");
+
+    const {token: accessToken} = await generateToken(payload,process.env.JWT_ACCESS_KEY!, "HS256");
 
     return c.json({accessToken});
 })

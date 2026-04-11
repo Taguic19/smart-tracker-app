@@ -28,6 +28,7 @@ export const authenticationMiddleware = factory.createMiddleware(async (c,next: 
         await next();
     }
     catch(err){
+        if(err instanceof HTTPException) throw err;
         throw new HTTPException(StatusCodes.UNAUTHORIZED, {message: err instanceof Error? err.message : "Invalid or expired token L3",});
     }
 });

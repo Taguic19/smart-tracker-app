@@ -1,5 +1,6 @@
 import { emailSchema, paginationSchema, paramsSchema, passwordSchema, type Variables } from "@/schema/request-grouped-schema-types";
 import { deleteUserByIdService, findUserByEmailService, findUserByIdService, findUsersService, updatePasswordService, updateUserEmailService } from "@/services/user-grouped-services";
+import { hashPassword } from "@/utils/password-helper";
 import { zValidator } from "@hono/zod-validator";
 import { createFactory } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
@@ -62,7 +63,8 @@ export const deleteUserByIdController = factory.createHandlers(zValidator("param
 export const updatePasswordController = factory.createHandlers(zValidator("json", passwordSchema), async (c) => {
     const {password} = c.req.valid("json");
     const {sub} = c.get("user");
-    const updatedUser = await updatePasswordService(sub, password);
+    const hashedPassword = await hashPassword(password);
+    const updatedUser = await updatePasswordService(sub, hashedPassword);
     if(!updatedUser) {
         throw new HTTPException(StatusCodes.INTERNAL_SERVER_ERROR, {message: `Failed to update password`});
     }
