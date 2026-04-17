@@ -5,8 +5,9 @@ import { HTTPException } from "hono/http-exception";
 import { verify } from "hono/jwt";
 import {StatusCodes} from "http-status-codes";
 import { tokenSchema } from "@/types/token-types";
+import type { Env } from "@/types/env";
+import { factory } from "@/configs/create-factory";
 
-const factory = createFactory<{Variables: Variables}>();
 
 
 export const authenticationMiddleware = factory.createMiddleware(async (c,next: Next) => {

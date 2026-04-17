@@ -1,7 +1,9 @@
-import authRouter from "./auth-routes";
+import profileRouter from "./profile-routes";
 import userRouter from "./user-routes";
+import authRouter from "./auth-routes";
 import taskRouter from "./task-routes";
 
-export const routes = [authRouter,userRouter, taskRouter] as const;
+export const routes = [profileRouter,userRouter,authRouter,taskRouter] as const;
 
-export type AppRoutes = (typeof routes)[number];
+
+export type AppTypes = (typeof routes)[number];

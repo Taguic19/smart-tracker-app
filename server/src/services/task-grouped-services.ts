@@ -23,7 +23,10 @@ export const findTasksService = async (pageNumber: number, pageSize: number) => 
         skip: (pageNumber -1) * pageSize,
         include: {
             assignee: {
-                select: userSafeSelect
+                select: {
+                    id: true,
+                    email: true
+                }
             }
         }
     });

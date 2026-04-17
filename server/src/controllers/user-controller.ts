@@ -1,13 +1,11 @@
-import { emailSchema, paginationSchema, paramsSchema, passwordSchema, type Variables } from "@/schema/request-grouped-schema-types";
+import { emailSchema, paginationSchema, paramsSchema, passwordSchema } from "@/schema/request-grouped-schema-types";
 import { deleteUserByIdService, findUserByEmailService, findUserByIdService, findUsersService, updatePasswordService, updateUserEmailService } from "@/services/user-grouped-services";
 import { hashPassword } from "@/utils/password-helper";
 import { zValidator } from "@hono/zod-validator";
-import { createFactory } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
 import { StatusCodes } from "http-status-codes";
+import { factory } from "@/configs/create-factory";
 
-
-const factory = createFactory<{Variables: Variables}>();
 
 export const getAllUsersController = factory.createHandlers(zValidator("query", paginationSchema), async (c) => {
     const {pageNumber, pageSize} = c.req.valid("query");
@@ -15,8 +13,7 @@ export const getAllUsersController = factory.createHandlers(zValidator("query", 
     
     return c.json({
         users,
-        totalCount,
-        sucess: true
+        totalCount
     });
 });
 
@@ -28,6 +25,7 @@ export const getUserByIdController = factory.createHandlers(zValidator("param", 
     }
     return c.json({user});
 });
+
 
 export const getUserByEmailController = factory.createHandlers(zValidator("json", emailSchema), async (c) => {
     const {email} = c.req.valid("json");

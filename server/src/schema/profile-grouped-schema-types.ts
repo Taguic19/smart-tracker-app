@@ -1,7 +1,5 @@
 import z from "zod";
 
-
-
 export const createProfileSchema = z.object({
     firstName: z.string(),
     lastName: z.string(),
@@ -10,6 +8,7 @@ export const createProfileSchema = z.object({
 });
 
 
+export const updateProfileSchema = createProfileSchema.partial().omit({userId: true});
 export type CreateProfile = z.infer<typeof createProfileSchema>;
 
 export interface IProfile {
@@ -20,5 +19,5 @@ export interface IProfile {
     createdAt: Date;
 }
 
-export type ProfileUpdate = Partial<Omit<CreateProfile, "userId">>;
+export type ProfileUpdate = z.infer<typeof updateProfileSchema>;
 

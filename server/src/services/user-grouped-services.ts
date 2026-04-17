@@ -71,3 +71,14 @@ export const updatePasswordService = async (userId: string, password: string): P
         select: userSafeSelect
     });
 }
+
+export const findLoggedUserService = async (userId: string) => {
+    return await prisma.user.findUnique({
+        where: {id: userId},
+        select: {
+            id: true,
+            email: true,
+            role: true
+        }
+    });
+}

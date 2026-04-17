@@ -1,0 +1,36 @@
+import {} from "@/schema/task-grouped-schema-types";
+import prisma from "@/configs/prisma-config";
+import { Status } from "@/generated/prisma/enums";
+import { userSafeSelect } from "./user-grouped-services";
+export const createTaskService = async (taskData) => {
+    return await prisma.task.create({
+        data: taskData,
+    });
+};
+export const updateTaskStatusService = async (taskId, newStatus) => {
+    return await prisma.task.update({
+        where: { id: taskId },
+        data: { status: newStatus }
+    });
+};
+export const findTasksService = async (pageNumber, pageSize) => {
+    return await prisma.task.findMany({
+        take: 10,
+        skip: (pageNumber - 1) * pageSize,
+        include: {
+            assignee: {
+                select: userSafeSelect
+            }
+        }
+    });
+};
+export const deleteTaskByIdService = async (taskId) => {
+    return await prisma.task.delete({
+        where: { id: taskId },
+    });
+};
+export const findTaskByIdService = async (taskId) => {
+    return await prisma.task.findUnique({
+        where: { id: taskId }
+    });
+};

@@ -4,7 +4,7 @@ import z from "zod"
 export type Variables  = {
     user: TokenPayload
 }
-
+    
 export const paginationSchema = z.object({
     pageNumber: z.coerce.number().int().positive().default(1),
     pageSize: z.coerce.number().int().positive().default(10)

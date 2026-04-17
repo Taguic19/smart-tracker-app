@@ -5,8 +5,8 @@ import { HTTPException } from "hono/http-exception";
 import { paginationSchema, paramsSchema, type Variables } from "@/schema/request-grouped-schema-types";
 import { zValidator } from "@hono/zod-validator";
 import { createTaskService, deleteTaskByIdService, findTaskByIdService, findTasksService, updateTaskStatusService } from "@/services/task-grouped-services";
+import { factory } from "@/configs/create-factory";
 
-const factory = createFactory<{Variables: Variables}>();
 
 export const createTaskController = factory.createHandlers(zValidator("json", createTaskSchema), async (c) => {
     const task = c.req.valid("json");
@@ -67,7 +67,7 @@ export const getAllTasksController = factory.createHandlers(zValidator("query",p
     const {pageNumber, pageSize} = c.req.valid("query");
     const tasks = await findTasksService(pageNumber, pageSize);
     
-    return c.json({success: true, message: "Tasks retrieved successfully", tasks});
+    return c.json({tasks});
 });
 
 export const getTaskByIdController = factory.createHandlers(zValidator("param", paramsSchema), async (c) => {

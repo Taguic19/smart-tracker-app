@@ -1,9 +1,7 @@
-import type { Variables } from "@/schema/request-grouped-schema-types";
-import { createFactory } from "hono/factory";
 import { StatusCodes } from "http-status-codes";
 import { zValidator } from "@hono/zod-validator";
 import { createUserSchema } from "@/schema/user-grouped-schema-types";
-import { createUserService, findUserByEmailService, findUserByIdService } from "@/services/user-grouped-services";
+import { createUserService, findLoggedUserService, findUserByEmailService, findUserByIdService } from "@/services/user-grouped-services";
 import { HTTPException } from "hono/http-exception";
 import { checkPassword, hashPassword } from "@/utils/password-helper";
 import { generateToken, setAuthCookie } from "@/utils/token-helper";
@@ -11,8 +9,8 @@ import type { RefreshLoginPayload, TokenPayload } from "@/types/token-types";
 import { deleteRefreshTokenService, storeRefreshTokenService } from "@/services/refresh-token-grouped-services";
 import { deleteCookie, getCookie } from "hono/cookie";
 import { verify } from "hono/jwt";
+import { factory } from "@/configs/create-factory";
 
-const factory = createFactory<{Variables: Variables}>();
 
 export const loginUserController = factory.createHandlers(zValidator("json", createUserSchema), async (c) => {
     const {email, password} = c.req.valid("json");
@@ -43,10 +41,14 @@ export const loginUserController = factory.createHandlers(zValidator("json", cre
     setAuthCookie(c,refreshToken);
     await storeRefreshTokenService({token: refreshToken, userId: matchedUser.id});
 
+    const returnedUserData = {
+        id: matchedUser.id,
+        email: matchedUser.email,
+        role: matchedUser.role
+    }
     return c.json({
-        success: true,
-        message: "Logged in successfully",
-        accessToken
+        accessToken,
+        user: returnedUserData
     });
 });
 
@@ -108,7 +110,17 @@ export const issueAccessTokenController = factory.createHandlers(async (c) => {
     const {token: accessToken} = await generateToken(payload,process.env.JWT_ACCESS_KEY!, "HS256");
 
     return c.json({accessToken});
-})
+});
+
+
+export const getCurrentUserController = factory.createHandlers(async (c) => {
+    const {sub} = c.get("user");
+    const user = await findLoggedUserService(sub);
+    if(!user ) {
+        throw new HTTPException(StatusCodes.NOT_FOUND, {message: "User not found"});
+    }
+    return c.json({user})
+});
 
 
 
